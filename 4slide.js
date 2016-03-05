@@ -2,7 +2,7 @@ $j = $.noConflict();
 afl = new aflSlide();
 afl.init();
 
-function aflSlide(){
+function aflSlide() {
   this.container = "";
   this.mediaHolder = "";
   this.infoBar = "";
@@ -12,8 +12,7 @@ function aflSlide(){
   this.scrollDelay = 200;
   var self = this;
 
-
-  this.init = function(){
+  this.init = function() {
     getAllMedia();
     this.container = createContainerDiv();
     this.mediaHolder = createMediaHolder();
@@ -21,22 +20,31 @@ function aflSlide(){
     this.current = 0;
   };
 
-  function createInfoBar(){
-    var infoContainer = $j("<div>",{id:"info-container",class:"slide"});
-    var infoCounter = $j("<span>",{id:"info-counter",class:"slide"});
-    var infoFile = $j("<span>",{id:"info-file",class:"slide"});
+  function createInfoBar() {
+    var infoContainer = $j("<div>", {
+      id: "info-container",
+      class: "slide"
+    });
+    var infoCounter = $j("<span>", {
+      id: "info-counter",
+      class: "slide"
+    });
+    var infoFile = $j("<span>", {
+      id: "info-file",
+      class: "slide"
+    });
     return $j(infoContainer).append(infoCounter).append(infoFile);
   }
 
-  function updateInfo(){
+  function updateInfo() {
     var infoCounter = $j(self.infoBar).children().first();
     var infoLabel = $j(self.infoBar).children().eq(1);
     $j(infoCounter).text((self.current + 1) + "/" + self.mediaObjects.length);
-    $j(infoLabel).text(self.mediaObjects[self.current].fileName);
+    $j(infoLabel).html(self.mediaObjects[self.current].fileName + "<br>" + self.mediaObjects[self.current].fileInfo);
   }
 
-  this.start = function(i){
-    if($j(".fileThumb").length !== this.mediaObjects.length)
+  this.start = function(i) {
+    if ($j(".fileThumb").length !== this.mediaObjects.length)
       getAllMedia();
     $j("body").append($j(this.container).append(this.infoBar).append(this.mediaHolder));
     this.current = i || 0;
@@ -44,15 +52,15 @@ function aflSlide(){
     this.scrollToPost(this.current);
     $j(this.container).fadeIn();
     updateInfo();
-    $j(document).bind("keydown",keyBinding);
-    $j(window).bind("resize",windowResizeEvent);
+    $j(document).bind("keydown", keyBinding);
+    $j(window).bind("resize", windowResizeEvent);
   };
 
-  function windowResizeEvent(){
-    $j("body").toggleClass("slide fullscreen-body",screen.height == window.innerHeight && screen.width == window.innerWidth);
+  function windowResizeEvent() {
+    $j("body").toggleClass("slide fullscreen-body", screen.height == window.innerHeight && screen.width == window.innerWidth);
   }
 
-  function keyBinding(e){
+  function keyBinding(e) {
     switch (e.keyCode) {
       case 32:
       case 40:
@@ -76,32 +84,32 @@ function aflSlide(){
     }
   }
 
-  this.stop = function(){
+  this.stop = function() {
     this.dimPost(this.current);
-    $j(this.container).fadeOut(function(){
+    $j(this.container).fadeOut(function() {
       $j(this.mediaHolder).empty();
       $j(this.container).remove();
     });
-    $j(document).unbind("keydown",keyBinding);
-    $j(window).unbind("resize",windowResizeEvent);
+    $j(document).unbind("keydown", keyBinding);
+    $j(window).unbind("resize", windowResizeEvent);
   };
 
-  this.next = function(){
-    if(this.current >= this.mediaObjects.length - 1) return;
+  this.next = function() {
+    if (this.current >= this.mediaObjects.length - 1) return;
     this.last = this.current;
-    if(this.mediaObjects[this.current+1] === undefined) this.current++;
+    if (this.mediaObjects[this.current + 1] === undefined) this.current++;
     this.current++;
     this.scrollToPost(this.current);
     this.setMedia(this.current);
     updateInfo();
-    if(this.current < this.mediaObjects.length - 1 && this.mediaObjects[this.current].img && this.mediaObjects[this.current].img.completed){
-      this.preloadMedia(this.current+1);
+    if (this.current < this.mediaObjects.length - 1 && this.mediaObjects[this.current].img && this.mediaObjects[this.current].img.completed) {
+      this.preloadMedia(this.current + 1);
     }
   };
 
-  this.prev = function(){
-    if(this.current <= 0) return;
-    if(this.mediaObjects[this.current-1] === undefined) this.current--;
+  this.prev = function() {
+    if (this.current <= 0) return;
+    if (this.mediaObjects[this.current - 1] === undefined) this.current--;
     this.last = this.current;
     this.current--;
     this.scrollToPost(this.current);
@@ -109,9 +117,9 @@ function aflSlide(){
     updateInfo();
   };
 
-  function getAllMedia(){
-    $j(".fileThumb").each(function(i,e){
-      if($j(e).prop("href") === "" || $j(e).prop("href") === undefined) return;
+  function getAllMedia() {
+    $j(".fileThumb").each(function(i, e) {
+      if ($j(e).prop("href") === "" || $j(e).prop("href") === undefined) return;
       self.mediaObjects[i] = {
         src: $j(e).prop("href"),
         type: $j(e).prop("href").indexOf("webm") != -1 ? "video" : "img",
@@ -119,105 +127,117 @@ function aflSlide(){
         parentHeight: $j(e).parents(".post.reply").height(),
         parent: $j(e).parents(".post.reply"),
         fileName: $j(e).siblings(".fileText").children("a").text(),
-        message: $j(e).parents(".file").siblings(".postMessage").text()
+        message: $j(e).parents(".file").siblings(".postMessage").text(),
+        fileInfo: $j(e).siblings(".fileText").children("a").get(0).nextSibling.nodeValue.trim()
       };
-      $j(e).removeAttr("href").click(function(){
+      $j(e).removeAttr("href").click(function() {
         self.start(i);
       });
     });
   }
 
-  this.setMedia = function(i){
+  this.setMedia = function(i) {
     var mo = this.mediaObjects[i];
-    if(!mo.img){
-      var img =$j("<"+mo.type+">").get(0);
+    if (!mo.img) {
+      var img = $j("<" + mo.type + ">").get(0);
       mo.img = img;
-      if(mo.img.tagName == "VIDEO"){
-        $j(mo.img).append($j("<source>",{src:mo.src,type:"video/webm"}));
-        mo.img.setAttribute("autoplay","");
-        mo.img.setAttribute("controls","");
-        mo.img.setAttribute("name","media");
-      }else{
+      if (mo.img.tagName == "VIDEO") {
+        $j(mo.img).append($j("<source>", {
+          src: mo.src,
+          type: "video/webm"
+        }));
+        mo.img.setAttribute("autoplay", "");
+        mo.img.setAttribute("controls", "");
+        mo.img.setAttribute("name", "media");
+      } else {
         mo.img.src = mo.src;
       }
     }
 
-    $j(mo.img).click(function(){
-      self.next();
-    }).contextmenu(function(){
-      self.prev();
-      return false;
-    });
-
-    if(mo.img.completed && !this.mediaObjects[this.current+1].img){
-      this.preloadMedia(this.current+1);
-    }else{
-      $j(mo.img).load(function(){
-        self.preloadMedia(self.current+1);
+    if (mo.img.completed && !this.mediaObjects[this.current + 1].img) {
+      this.preloadMedia(this.current + 1);
+    } else {
+      $j(mo.img).load(function() {
+        self.preloadMedia(self.current + 1);
       });
     }
     $j(this.mediaHolder).empty()
-                        .append(mo.img);
+      .append(mo.img);
+    $j(mo.img).click(function() {
+      self.next();
+    }).contextmenu(function() {
+      self.prev();
+      return false;
+    });
     setPostMessage(mo.img);
   };
 
-  function setPostMessage(img){
-    if(!img.offsetWidth){
-      setTimeout(function(){
+  function setPostMessage(img) {
+    if (!img.offsetWidth) {
+      setTimeout(function() {
         setPostMessage(img);
-      },200);
+      }, 200);
       return;
     }
-    var messageContainer = $j("<div>",{id:"message-container",class:"slide"}).css({
+    var messageContainer = $j("<div>", {
+      id: "message-container",
+      class: "slide"
+    }).css({
       width: img.offsetWidth,
       left: img.offsetLeft
     }).text(self.mediaObjects[self.current].message);
     $j(self.mediaHolder).append(messageContainer);
   }
 
-  function createMediaHolder(){
-    var mediaHolder = $j("<div>",{id:"media-holder",class:"slide"});
+  function createMediaHolder() {
+    var mediaHolder = $j("<div>", {
+      id: "media-holder",
+      class: "slide"
+    });
     return mediaHolder;
   }
 
-  this.preloadMedia = function(i){
+  this.preloadMedia = function(i) {
     var mo = this.mediaObjects[i];
-    if(!mo) return;
-    if(mo.img) return;
-    if(mo.type === "img"){
+    if (!mo) return;
+    if (mo.img) return;
+    if (mo.type === "img") {
       mo.img = new Image();
       mo.img.src = mo.src;
-    }else{
-      mo.img = $j("<video>").append($j("<source>").attr("src",mo.src)).get(0);
-      mo.img.setAttribute("autoplay","");
-      mo.img.setAttribute("controls","");
-      mo.img.setAttribute("name","media");
+    } else {
+      mo.img = $j("<video>").append($j("<source>").attr("src", mo.src)).get(0);
+      mo.img.setAttribute("autoplay", "");
+      mo.img.setAttribute("controls", "");
+      mo.img.setAttribute("name", "media");
     }
   };
 
-  this.scrollToPost = function(i){
+  this.scrollToPost = function(i) {
     this.dimPost(this.last);
     var sm = screen.availHeight / 2;
     var pm = this.mediaObjects[i].parentHeight / 2;
     $j("body").animate({
       scrollTop: this.mediaObjects[i].top - sm + pm
-    },this.scrollDelay,function(){
+    }, this.scrollDelay, function() {
       self.highlightPost(i);
     });
   };
 
-  this.dimPost = function(i){
+  this.dimPost = function(i) {
     $j(this.mediaObjects[i].parent).removeClass("slide highlighted-post");
   };
 
-  this.highlightPost = function(i){
+  this.highlightPost = function(i) {
     $j(this.mediaObjects[i].parent).addClass("slide highlighted-post");
   };
 
-  function createContainerDiv(){
-    var cont = $j("<div>",{id:"main-container",class:"slide"});
-    $j(cont).click(function(e){
-      if(e.target.tagName === "IMG" || e.target.tagName == "VIDEO") return;
+  function createContainerDiv() {
+    var cont = $j("<div>", {
+      id: "main-container",
+      class: "slide"
+    });
+    $j(cont).click(function(e) {
+      if (e.target.tagName === "IMG" || e.target.tagName == "VIDEO") return;
       self.stop();
     });
     return cont;
