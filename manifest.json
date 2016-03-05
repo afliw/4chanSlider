@@ -4,9 +4,8 @@
   "version": "0.1",
   "content_scripts": [
     {
-      "matches": [
-        "https://boards.4chan.org/*/thread/*"
-      ],
+      "matches": ["https://boards.4chan.org/*/thread/*"],
+      "css":["4slide.css"],
       "js": ["jquery.min.js","4Slide.js"]
     }
   ]

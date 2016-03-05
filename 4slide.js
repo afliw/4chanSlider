@@ -1,16 +1,3 @@
-// var s = document.createElement("script");
-// s.src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js";
-// s.type = "text/javascript";
-// document.getElementsByTagName("head")[0].appendChild(s);
-// var checkInterval = setInterval(function() {
-//   if ($ == "function (a,b){return new n.fn.init(a,b)}") {
-//     $j = $.noConflict();
-//     clearInterval(checkInterval);
-//     afl = new aflSlide();
-//     afl.init();
-//   }
-// }, 500);
-
 $j = $.noConflict();
 afl = new aflSlide();
 afl.init();
@@ -23,44 +10,21 @@ function aflSlide(){
   this.current = 0;
   this.last = 0;
   this.scrollDelay = 200;
-  this.initialized = false;
   var self = this;
 
 
   this.init = function(){
-    if($j(".fileThumb").length !== this.mediaObjects.length)
-      getAllMedia();
-    if(this.initialized)
-      return;
+    getAllMedia();
     this.container = createContainerDiv();
     this.mediaHolder = createMediaHolder();
     this.infoBar = createInfoBar();
     this.current = 0;
-    this.initialized = true;
   };
 
   function createInfoBar(){
-    var infoContainer = $j("<div>").css({
-      position: "absolute",
-      backgroundColor: "black",
-      opacity: 0.7,
-      right: 0,
-      top: 0,
-      "text-align": "right",
-      "padding-right": "15px",
-    });
-    var infoCounter = $j("<span>").css({
-      "font-size": "26px",
-      position: "relative",
-      margin: "5px",
-      "font-weight": "bold"
-    });
-    var infoFile = $j("<span>").css({
-      display: "block",
-      margin: "5px",
-      "font-weight": "bold"
-    });
-
+    var infoContainer = $j("<div>",{id:"info-container",class:"slide"});
+    var infoCounter = $j("<span>",{id:"info-counter",class:"slide"});
+    var infoFile = $j("<span>",{id:"info-file",class:"slide"});
     return $j(infoContainer).append(infoCounter).append(infoFile);
   }
 
@@ -72,23 +36,20 @@ function aflSlide(){
   }
 
   this.start = function(i){
-    this.init();
+    if($j(".fileThumb").length !== this.mediaObjects.length)
+      getAllMedia();
     $j("body").append($j(this.container).append(this.infoBar).append(this.mediaHolder));
     this.current = i || 0;
     this.setMedia(this.current);
     this.scrollToPost(this.current);
     $j(this.container).fadeIn();
     updateInfo();
-    $j(document).bind("keyup",keyBinding);
+    $j(document).bind("keydown",keyBinding);
     $j(window).bind("resize",windowResizeEvent);
   };
 
   function windowResizeEvent(){
-    if(screen.height == window.innerHeight && screen.width == window.innerWidth){
-      $j("body").css("overflow","hidden");
-    }else{
-      $j("body").css("overflow","");
-    }
+    $j("body").toggleClass("slide fullscreen-body",screen.height == window.innerHeight && screen.width == window.innerWidth);
   }
 
   function keyBinding(e){
@@ -121,7 +82,7 @@ function aflSlide(){
       $j(this.mediaHolder).empty();
       $j(this.container).remove();
     });
-    $j(document).unbind("keyup",keyBinding);
+    $j(document).unbind("keydown",keyBinding);
     $j(window).unbind("resize",windowResizeEvent);
   };
 
@@ -181,7 +142,7 @@ function aflSlide(){
       }
     }
 
-    $j(mo.img).css("height","100%").click(function(){
+    $j(mo.img).click(function(){
       self.next();
     }).contextmenu(function(){
       self.prev();
@@ -207,32 +168,21 @@ function aflSlide(){
       },200);
       return;
     }
-    var messageContainer = $j("<div>").css({
-      position: "absolute",
-      bottom: 0,
+    var messageContainer = $j("<div>",{id:"message-container",class:"slide"}).css({
       width: img.offsetWidth,
-      textAlign: "center",
-      left: img.offsetLeft,
-      backgroundColor: "black",
-      "opacity": 0.6,
-      fontSize: "16px"
+      left: img.offsetLeft
     }).text(self.mediaObjects[self.current].message);
     $j(self.mediaHolder).append(messageContainer);
   }
 
   function createMediaHolder(){
-    var mediaHolder = $j("<div>");
-    $j(mediaHolder).css({
-      margin:"auto",
-      textAlign:"center",
-      width: "100%",
-      height: "100%"
-    });
+    var mediaHolder = $j("<div>",{id:"media-holder",class:"slide"});
     return mediaHolder;
   }
 
   this.preloadMedia = function(i){
-    var mo = this.mediaObjects[i]
+    var mo = this.mediaObjects[i];
+    if(!mo) return;
     if(mo.img) return;
     if(mo.type === "img"){
       mo.img = new Image();
@@ -257,31 +207,15 @@ function aflSlide(){
   };
 
   this.dimPost = function(i){
-    $j(this.mediaObjects[i].parent).css({
-      backgroundColor: ""
-    });
+    $j(this.mediaObjects[i].parent).removeClass("slide highlighted-post");
   };
 
   this.highlightPost = function(i){
-    $j(this.mediaObjects[i].parent).css({
-      backgroundColor: "cyan"
-    });
+    $j(this.mediaObjects[i].parent).addClass("slide highlighted-post");
   };
 
   function createContainerDiv(){
-    var cont = $j("<div>");
-    $j(cont).css({
-      position: "fixed",
-      height: "100%",
-      width: "100%",
-      top: "0",
-      left: "0",
-      backgroundColor: "rgba(0,0,0,0.9)",
-      zIndex: "99",
-      display: "none",
-      color:"white"
-    });
-
+    var cont = $j("<div>",{id:"main-container",class:"slide"});
     $j(cont).click(function(e){
       if(e.target.tagName === "IMG" || e.target.tagName == "VIDEO") return;
       self.stop();
