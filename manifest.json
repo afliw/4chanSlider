@@ -1,0 +1,13 @@
+{
+  "manifest_version": 2,
+  "name": "4chan Slider",
+  "version": "0.1",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://boards.4chan.org/*/thread/*"
+      ],
+      "js": ["jquery.min.js","4Slide.js"]
+    }
+  ]
+}
