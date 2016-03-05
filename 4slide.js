@@ -79,7 +79,41 @@ function aflSlide(){
     this.scrollToPost(this.current);
     $j(this.container).fadeIn();
     updateInfo();
+    $j(document).bind("keyup",keyBinding);
+    $j(window).bind("resize",windowResizeEvent);
   };
+
+  function windowResizeEvent(){
+    if(screen.height == window.innerHeight && screen.width == window.innerWidth){
+      $j("body").css("overflow","hidden");
+    }else{
+      $j("body").css("overflow","");
+    }
+  }
+
+  function keyBinding(e){
+    switch (e.keyCode) {
+      case 32:
+      case 40:
+      case 39:
+        self.next();
+        e.stopPropagation();
+        e.preventDefault();
+        return false;
+      case 37:
+      case 38:
+      case 8:
+        self.prev();
+        e.stopPropagation();
+        e.preventDefault();
+        return false;
+      case 27:
+        self.stop();
+        e.stopPropagation();
+        e.preventDefault();
+        return false;
+    }
+  }
 
   this.stop = function(){
     this.dimPost(this.current);
@@ -87,6 +121,8 @@ function aflSlide(){
       $j(this.mediaHolder).empty();
       $j(this.container).remove();
     });
+    $j(document).unbind("keyup",keyBinding);
+    $j(window).unbind("resize",windowResizeEvent);
   };
 
   this.next = function(){
@@ -249,7 +285,7 @@ function aflSlide(){
     $j(cont).click(function(e){
       if(e.target.tagName === "IMG" || e.target.tagName == "VIDEO") return;
       self.stop();
-    })
+    });
     return cont;
   }
 }
