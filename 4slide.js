@@ -8,9 +8,10 @@ function aflSlide() {
   this.infoBar = "";
   this.mediaObjects = [];
   this.current = 0;
-  this.last = 0;
+  this.last = 0
   this.scrollDelay = 200;
-  var self = this;
+  this.zoomFactor = 25;
+  var self = this
 
   this.init = function() {
     getAllMedia();
@@ -162,13 +163,25 @@ function aflSlide() {
       });
     }
     $j(this.mediaHolder).empty()
-      .append(mo.img);
+                        .append(mo.img);
+
     $j(mo.img).click(function() {
       self.next();
     }).contextmenu(function() {
       self.prev();
       return false;
+    }).on("mousewheel",function(e){
+      var currentHeight = parseInt(this.style.height) || 100;
+      if(e.originalEvent.wheelDelta > 0){
+        this.style.height = (currentHeight + self.zoomFactor)+"%";
+      }else{
+        this.style.height = (currentHeight - self.zoomFactor)+"%";
+      }
+      e.stopPropagation();
+      e.preventDefault();
+      return false;
     });
+
     setPostMessage(mo.img);
   };
 
