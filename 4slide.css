@@ -1,5 +1,5 @@
 
-.slide#main-container{
+.slide#main-container {
   position: fixed;
   height: 100%;
   width: 100%;
@@ -11,14 +11,14 @@
   color: white;
 }
 
-.slide#media-holder{
+.slide#media-holder {
   margin:auto;
   text-align:center;
   width: 100%;
   height: 100%;
 }
 
-.slide#message-container{
+.slide#message-container {
   position: absolute;
   bottom: 0;
   text-align: center;
@@ -27,7 +27,12 @@
   font-size: 16px;
 }
 
-.slide#info-container{
+.slide#message-container:hover {
+  opacity: 1;
+}
+
+.slide#info-container {
+  color: white;
   position: absolute;
   background-color: black;
   opacity: 0.7;
@@ -37,14 +42,18 @@
   padding-right: 15px;
 }
 
-.slide#info-counter{
+.slide#info-container:hover {
+  opacity: 1;
+}
+
+.slide#info-counter {
   font-size: 26px;
   position: relative;
   margin: 5px;
   font-weight: bold;
 }
 
-.slide#info-file{
+.slide#info-file {
   display: block;
   margin: 5px;
   font-weight: bold;
@@ -54,10 +63,10 @@
   height: 100%;
 }
 
-.slide.highlighted-post{
-  background-color: cyan;
+.slide.highlighted-post {
+  background-color: #00FFFF;
 }
 
-.slide.fullscreen-body{
+.slide.fullscreen-body {
   overflow: hidden;
 }
