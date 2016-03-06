@@ -28,7 +28,7 @@
 }
 
 .slide#message-container:hover {
-  opacity: 1;
+  opacity: 0.8;
 }
 
 .slide#info-container {
@@ -43,7 +43,7 @@
 }
 
 .slide#info-container:hover {
-  opacity: 1;
+  opacity: 0.8;
 }
 
 .slide#info-counter {
@@ -59,8 +59,9 @@
   font-weight: bold;
 }
 
-.slide#media-holder img, .slide#media-holder video{
+.slide#media-holder img, .slide#media-holder video {
   height: 100%;
+    border: solid 2px black;
 }
 
 .slide.highlighted-post {
