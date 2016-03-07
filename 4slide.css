@@ -6,7 +6,7 @@
   top: 0;
   left: 0;
   background-color: rgba(0,0,0,0.9);
-  z-index: 99;
+  z-index: 90;
   display: none;
   color: white;
 }
@@ -66,8 +66,19 @@
 }
 
 .slide.highlighted-post {
-  background-color: #00FFFF;
+  background-color: rgba(0,0,0,0.3);
+  z-index: 91; 
+  position: relative;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
 }
+
+.slide.highlighted-post:hover {
+  background-color: rgba(0,0,0,0.8);
+}
+
 
 .slide.fullscreen-body {
   overflow: hidden;
