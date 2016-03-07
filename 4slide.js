@@ -165,9 +165,7 @@ function aflSlide() {
     $j(this.mediaHolder).empty()
                         .append(mo.img);
 
-    $j(mo.img).click(function() {
-      self.next();
-    }).contextmenu(function() {
+    $j(mo.img).click(imgClickHandler).contextmenu(function() {
       self.prev();
       return false;
     }).on("mousewheel",function(e){
@@ -175,14 +173,58 @@ function aflSlide() {
       if(e.originalEvent.wheelDelta > 0){
         this.style.height = (currentHeight + self.zoomFactor)+"%";
       }else{
-        this.style.height = (currentHeight - self.zoomFactor)+"%";
+        this.style.height = (currentHeight - self.zoomFactor >= 100 ? currentHeight - self.zoomFactor : 100)+"%";
+        this.style.top = 0;
+        this.style.left = 0;
+      }
+      $j(this).unbind("click");
+      if(this.style.height === "100%"){
+        $j(this).bind("click",imgClickHandler);
       }
       e.stopPropagation();
       e.preventDefault();
       return false;
+    }).mousedown(function(e){
+      $j(document).mouseup(this,imgMouseUpHandler);
+      var eventData = {
+        imgTop: parseInt($j(this).get(0).style.top || 0),
+        imgLeft: parseInt($j(this).get(0).style.left || 0),
+        maxTop: window.innerHeight - parseInt($j(this).get(0).height),
+        maxLeft: window.innerWidth - parseInt($j(this).get(0).width),
+        moX: e.clientX,
+        moY: e.clientY
+      };
+      $j(this).css("cursor","-webkit-grabbing")
+              .mousemove(eventData,imgMouseMoveHandler);
     });
 
     setPostMessage(mo.img);
+  };
+
+  var imgClickHandler = function(){
+    self.next();
+  };
+
+  var imgMouseUpHandler = function(e){
+    $j(e.data).unbind("mousemove").css("cursor","");
+    $j(this).unbind("mouseup",imgMouseUpHandler);
+  };
+
+  var imgMouseMoveHandler = function(e,eventData){
+    var mX = e.clientX;
+    var mY = e.clientY;
+
+    var newImgTop = e.data.imgTop + ((e.data.moY - mY) * -1) * 1.2;
+    var newImgLeft = e.data.imgLeft + ((e.data.moX - mX) * -1) * 1.2;
+
+    newImgTop = e.data.maxTop > 0 ? 0 : newImgTop > 0 ? 0 : newImgTop > e.data.maxTop ? newImgTop : e.data.maxTop;
+    newImgLeft = e.data.maxLeft > 0 ? 0 : newImgLeft > 0 ? 0 : newImgLeft > e.data.maxLeft ? newImgLeft : e.data.maxLeft;
+
+    $j(this).css({
+      top: newImgTop + "px",
+      left: newImgLeft + "px"
+    });
+
   };
 
   function setPostMessage(img) {

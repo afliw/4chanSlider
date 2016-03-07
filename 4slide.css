@@ -52,6 +52,13 @@
 
 .slide#media-holder img, .slide#media-holder video{
   height: 100%;
+  position: relative;
+  user-drag: none;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }
 
 .slide.highlighted-post{
