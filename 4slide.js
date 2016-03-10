@@ -47,8 +47,22 @@ function aflSlide() {
     });
     $j(self.container).append(hi);
     hi.get(0).select();
-    console.log(document.execCommand("copy"));
+    showToastMessage(document.execCommand("copy") ? "Copied URL to clipboard" : "Copy failed");
     hi.remove();
+  }
+
+  function showToastMessage(msg){
+    $j(".slide#toast-message").stop().remove();
+    var tmsg = $j("<div>",{class:"slide",id:"toast-message",text:msg,style:"display:none"});
+    $j(self.container).append(tmsg);
+    tmsg.fadeIn(function(){
+      var el = this;
+      setTimeout(function(){
+        $j(el).fadeOut(function(){
+          $j(this).remove();
+        })
+      },2000)
+    });
   }
 
   this.start = function(i) {

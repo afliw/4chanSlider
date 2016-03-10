@@ -51,6 +51,21 @@
   font-weight: bold;
 }
 
+.slide#toast-message{
+  position: absolute;
+  background-color: rgba(0,0,0,0.6);
+  top: 15px;
+  margin: auto;
+  text-align: center;
+  z-index: 1;
+  border-radius: 15px;
+  font-weight: 600;
+  padding: 5px;
+  width: 250px;
+  left: 0;
+  right: 0;
+}
+
 .slide#info-link{
   cursor: pointer;
 }
