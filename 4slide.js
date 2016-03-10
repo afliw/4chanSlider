@@ -14,7 +14,7 @@ function aflSlide() {
   var self = this
 
   this.init = function() {
-    getAllMedia();
+    checkForUpdates();
     this.container = createContainerDiv();
     this.mediaHolder = createMediaHolder();
     this.infoBar = createInfoBar();
@@ -26,27 +26,32 @@ function aflSlide() {
       id: "info-container",
       class: "slide"
     });
-    var infoCounter = $j("<span>", {
-      id: "info-counter",
-      class: "slide"
-    });
-    var infoFile = $j("<span>", {
-      id: "info-file",
-      class: "slide"
-    });
-    return $j(infoContainer).append(infoCounter).append(infoFile);
+    return $j(infoContainer);
   }
 
   function updateInfo() {
-    var infoCounter = $j(self.infoBar).children().first();
-    var infoLabel = $j(self.infoBar).children().eq(1);
-    $j(infoCounter).text((self.current + 1) + "/" + self.mediaObjects.length);
-    $j(infoLabel).html(self.mediaObjects[self.current].fileName + "<br>" + self.mediaObjects[self.current].fileInfo);
+    var mediaInfo = self.mediaObjects[self.current];
+    var infoCounter = $j("<div>",{class:"slide",id:"info-counter",text:(self.current + 1) + "/" + self.mediaObjects.length});
+    var infoFilename = $j("<div>",{class:"slide info-file",text:mediaInfo.fileName});
+    var infoFileProperties = $j("<div>",{class:"slide info-file",text:mediaInfo.fileInfo});
+    var infoLink = $j("<div>",{class:"slide",id:"info-link",text:"Copy URL","data-url":mediaInfo.src}).click(copyLink);
+    $j(self.infoBar).empty().append(infoCounter,infoFilename,infoFileProperties,infoLink);
+  }
+
+  function copyLink(e){
+    e.stopPropagation();
+    var hi = $j("<input>",{
+      type:"text",
+      value:$j(this).data("url"),
+      style:"display:block;position:abosulute;top:0;left:0"
+    });
+    $j(self.container).append(hi);
+    hi.get(0).select();
+    console.log(document.execCommand("copy"));
+    hi.remove();
   }
 
   this.start = function(i) {
-    if ($j(".fileThumb").length !== this.mediaObjects.length)
-      getAllMedia();
     $j("body").append($j(this.container).append(this.infoBar).append(this.mediaHolder));
     this.current = i || 0;
     this.setMedia(this.current);
@@ -135,6 +140,7 @@ function aflSlide() {
         self.start(i);
       });
     });
+    updateInfo();
   }
 
   this.setMedia = function(i) {
@@ -151,9 +157,12 @@ function aflSlide() {
         mo.img.setAttribute("controls", "");
         mo.img.setAttribute("name", "media");
       } else {
+        $j(mo.img).attr("onload","ThreadUpdater.forceUpdate()");
         mo.img.src = mo.src;
       }
     }
+
+    $j(mo.img).addClass("vertical-align");
 
     if (mo.img.completed && !this.mediaObjects[this.current + 1].img) {
       this.preloadMedia(this.current + 1);
@@ -165,26 +174,32 @@ function aflSlide() {
     $j(this.mediaHolder).empty()
                         .append(mo.img);
 
+    setImageDimension(mo.img);
+
     $j(mo.img).click(imgClickHandler).contextmenu(function() {
       self.prev();
       return false;
     }).on("mousewheel",function(e){
-      var currentHeight = parseInt(this.style.height) || 100;
+      var dimension = this.style.height !== "" ? "height" : "width";
+      var currenDimension = parseInt(this.style[dimension]) || 100;
       if(e.originalEvent.wheelDelta > 0){
-        this.style.height = (currentHeight + self.zoomFactor)+"%";
+        this.style[dimension] = (currenDimension + self.zoomFactor)+"%";
       }else{
-        this.style.height = (currentHeight - self.zoomFactor >= 100 ? currentHeight - self.zoomFactor : 100)+"%";
+        this.style[dimension] = (currenDimension - self.zoomFactor >= 100 ? currenDimension - self.zoomFactor : 100)+"%";
         this.style.top = 0;
         this.style.left = 0;
       }
-      $j(this).unbind("click");
-      if(this.style.height === "100%"){
-        $j(this).bind("click",imgClickHandler);
+      $j(this).unbind("click").removeClass("vertical-align");
+      if(this.style[dimension] === "100%"){
+        $j(this).bind("click",imgClickHandler).css({top:"",left:""}).addClass("vertical-align");
       }
+      $j(".slide#message-container").remove();
+      setPostMessage(this);
       e.stopPropagation();
       e.preventDefault();
       return false;
     }).mousedown(function(e){
+      if(this.style.height === "100%" || this.style.width === "100%") return;
       $j(document).mouseup(this,imgMouseUpHandler);
       var eventData = {
         imgTop: parseInt($j(this).get(0).style.top || 0),
@@ -197,13 +212,32 @@ function aflSlide() {
       $j(this).css("cursor","-webkit-grabbing")
               .mousemove(eventData,imgMouseMoveHandler);
     });
-
-    setPostMessage(mo.img);
   };
+
+  function setImageDimension(img){
+    if(img.width === 0){
+      $j(img).css("height","100%");
+      img.onload = setImageDimension;
+      return;
+    }
+    img =  img.target || img;
+    $j(img).css("height","");
+    $j(img).css(/*img.width > window.innerWidth &&*/ img.width > img.height * 2 ? "width" : "height", "100%");
+    $j(img).toggleClass("vertical-align", img.width > img.height * 2);
+    setPostMessage(img);
+  }
 
   var imgClickHandler = function(){
     self.next();
   };
+
+  function checkForUpdates(){
+    var interval = setInterval(function(){
+      if($j(".fileThumb").length !== self.mediaObjects.length){
+        getAllMedia();
+      }
+    },1000);
+  }
 
   var imgMouseUpHandler = function(e){
     $j(e.data).unbind("mousemove").css("cursor","");
@@ -238,7 +272,7 @@ function aflSlide() {
       id: "message-container",
       class: "slide"
     }).css({
-      width: img.offsetWidth,
+      width: img.offsetWidth > window.innerWidth ? window.innerWidth : img.offsetWidth,
       left: img.offsetLeft
     }).text(self.mediaObjects[self.current].message);
     $j(self.mediaHolder).append(messageContainer);
@@ -258,6 +292,7 @@ function aflSlide() {
     if (mo.img) return;
     if (mo.type === "img") {
       mo.img = new Image();
+      $j(mo.img).attr("onload","ThreadUpdater.forceUpdate()");
       mo.img.src = mo.src;
     } else {
       mo.img = $j("<video>").append($j("<source>").attr("src", mo.src)).get(0);
@@ -279,7 +314,7 @@ function aflSlide() {
   };
 
   this.dimPost = function(i) {
-    $j(this.mediaObjects[i].parent).removeClass("slide highlighted-post");
+    $j(".slide.highlighted-post").removeClass("slide highlighted-post");
   };
 
   this.highlightPost = function(i) {
