@@ -35,7 +35,14 @@ function aflSlide() {
     var infoFilename = $j("<div>",{class:"slide info-file",text:mediaInfo.fileName});
     var infoFileProperties = $j("<div>",{class:"slide info-file",text:mediaInfo.fileInfo});
     var infoLink = $j("<div>",{class:"slide",id:"info-link",text:"Copy URL","data-url":mediaInfo.src}).click(copyLink);
-    $j(self.infoBar).empty().append(infoCounter,infoFilename,infoFileProperties,infoLink);
+    var sarchLink = $j("<div>",{class:"slide",id:"search-link",text:"Reverse Search","data-url":mediaInfo.src}).click(reverseSearch);
+    $j(self.infoBar).empty().append(infoCounter,infoFilename,infoFileProperties,infoLink,sarchLink);
+  }
+
+  function reverseSearch(e){
+    e.stopPropagation();
+    var searchUrl = "https://www.google.com/searchbyimage?image_url="+$j(this).data("url");
+    window.open(searchUrl,"_blank");
   }
 
   function copyLink(e){
@@ -235,9 +242,13 @@ function aflSlide() {
       return;
     }
     img =  img.target || img;
-    $j(img).css("height","");
-    $j(img).css(/*img.width > window.innerWidth &&*/ img.width > img.height * 2 ? "width" : "height", "100%");
-    $j(img).toggleClass("vertical-align", img.width > img.height * 2);
+    var objWidth = img.tagName === "VIDEO" ? img.videoWidth : img.width;
+    var objHeight = img.tagName === "VIDEO" ? img.videoHeight : img.height;
+    var compareWidth = (objWidth * window.innerHeight) / objHeight;
+    var compareHeight = (objHeight * window.innerWidth) / objWidth;
+    $j(img).css({"height":"","width":""});
+    $j(img).css(compareWidth > window.innerWidth || compareWidth > compareHeight * 2 ? "width" : "height", "100%");
+    $j(img).toggleClass("vertical-align", compareWidth > img.height * 2);
     setPostMessage(img);
   }
 

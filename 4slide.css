@@ -66,7 +66,7 @@
   right: 0;
 }
 
-.slide#info-link{
+.slide#info-link,.slide#search-link{
   cursor: pointer;
 }
 
