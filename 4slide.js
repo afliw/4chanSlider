@@ -188,7 +188,7 @@ function aflSlide() {
     if (mo.img.completed && !this.mediaObjects[this.current + 1].img) {
       this.preloadMedia(this.current + 1);
     } else {
-      $j(mo.img).load(function() {
+      $j(mo.img).on("load", function() {
         self.preloadMedia(self.current + 1);
       });
     }
@@ -331,7 +331,7 @@ function aflSlide() {
     this.dimPost(this.last);
     var sm = screen.availHeight / 2;
     var pm = this.mediaObjects[i].parentHeight / 2;
-    $j("body").animate({
+    $j("html, body").animate({
       scrollTop: this.mediaObjects[i].top - sm + pm
     }, this.scrollDelay, function() {
       self.highlightPost(i);
