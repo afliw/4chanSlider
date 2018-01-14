@@ -6,7 +6,7 @@
     {
       "matches": ["*://boards.4chan.org/*"],
       "css":["4slide.css"],
-      "js": ["jquery.min.js","4Slide.js"]
+      "js": ["jquery-3.2.1.min.js","4Slide.js"]
     }
   ]
 }
