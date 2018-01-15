@@ -151,7 +151,7 @@ function aflSlide() {
         src: $j(e).prop("href"),
         type: $j(e).prop("href").indexOf("webm") != -1 ? "video" : "img",
         top: $j(e).offset().top,
-        parentHeight: $j(e).parents(".post.reply").height(),
+        parentHeight: $j(e).parents(".post.reply").height() || $j(e).height(),
         parent: $j(e).parents(".post.reply"),
         fileName: $j(e).siblings(".fileText").children("a").text(),
         message: $j(e).parents(".file").siblings(".postMessage").text(),
@@ -162,6 +162,10 @@ function aflSlide() {
       });
     });
     updateInfo();
+  }
+
+  function buildMessage(){
+    
   }
 
   this.setMedia = function(i) {
