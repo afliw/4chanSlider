@@ -66,13 +66,13 @@
   right: 0;
 }
 
-.slide#info-link,.slide#search-link{
+.slide#info-link,.slide#search-link, .slide#info-copyImage{
   cursor: pointer;
 }
 
 .slide#media-holder img, .slide#media-holder video{
   position: relative;
-  user-drag: none;
+  /* user-drag: none; */
   user-select: none;
   -moz-user-select: none;
   -webkit-user-drag: none;
