@@ -171,7 +171,8 @@ function aflSlide() {
         this.scrollToPost(this.current);
         this.setMedia(this.current);
         updateInfo();
-        $j(".navLinks.navLinksBot.desktop a[data-cmd='update']").get(0).click();
+        let updateButton = $j(".navLinks.navLinksBot.desktop a[data-cmd='update']").get(0);
+        if(updateButton) updateButton.click();
         if (this.current < this.mediaObjects.length - 1 && this.mediaObjects[this.current].img && this.mediaObjects[this.current].img.completed) {
             this.preloadMedia(this.current + 1);
         }
@@ -351,7 +352,12 @@ function aflSlide() {
         }).css({
             width: img.offsetWidth > window.innerWidth ? window.innerWidth : img.offsetWidth,
             left: img.offsetLeft
-        }).text(self.mediaObjects[self.current].message);
+        }).text(self.mediaObjects[self.current].message)
+        .on("mouseenter", function(e){
+            $j(this).animate({"opacity": 0});
+        }).on("mouseleave", function(e){
+            $j(this).animate({"opacity": 0.6});
+        });
         $j(self.mediaHolder).append(messageContainer);
     }
 
