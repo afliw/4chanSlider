@@ -4,7 +4,7 @@
   "version": "0.1",
   "content_scripts": [
     {
-      "matches": ["*://boards.4chan.org/*"],
+      "matches": ["*://boards.4chan.org/*", "*://boards.4channel.org/*"],
       "css":["4slide.css"],
       "js": ["jquery-3.2.1.min.js","4Slide.js"]
     }
